@@ -1,4 +1,8 @@
+import scala.util.Random
+
 object reader {
+
+  val emptyBoard: List[Tetromino] = List()
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -7,41 +11,56 @@ object reader {
     val charStream = Stream.iterate(0)(x => nbis.read(100))
     var tick = 0
 
-    charStream.foldLeft("")((string ,key) => {
-      val ns: String = string
+    charStream.foldLeft(emptyBoard)((currentBoard, key) => {
       val userInput: Char = key.toChar
-      tick +=1
-      clear
+      clear()
+      println("input : "+userInput)
       println("\n\n")
-      println(userInput)
-      printBoard(board,10, 15)
-      println(board.head.getIndex())
-      parse(board, userInput, tick)
-      ns
+      printBoard(currentBoard,10, 15)
+      println(tick)
+      val nb = parse(currentBoard, userInput, tick)
+      tick +=1
+      nb
     })
 
   }
 
-  val board: List[Tetromino] = List(new Tetromino("dot", "red", 15))
+  def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
+    if (tick%10 == 0){board.foreach(t => t.fall(10))}
 
+    board.foreach(t => moveTetromino(t, userInput))
 
+    collison(board)
 
-  def parse(b: List[Tetromino],userInput: Char, tick: Int) ={
-    if (tick%10 == 0){
-      b.foreach(t => t.fall(10))}
-    b.foreach(t =>
+    board ++ spawn(tick)
+  }
+
+  def moveTetromino(block: Tetromino, userInput: Char): Unit = {
     userInput match {
-      case 'a' => t.moveLeft()
-      case 'd' => t.moveRight()
+      case 'a' => block.moveLeft
+      case 'd' => block.moveRight
       case _   =>
-    })
+    }
+  }
+
+  def collison(board: List[Tetromino]): Unit ={
+    val movingTets = board.filter(t => t.canMove)
+    val nonMovingTetsIndexes = board.filterNot(t => t.canMove).map(_.getIndex).toSet
+    val movingTetsFutureIndexes = movingTets.map(_.getIndex+10).toSet
+    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.stopMove)}
+  }
+
+  def spawn(tick: Int): List[Tetromino] ={
+    if (tick%150 == 0) {
+      List(new Tetromino("dot", generateColour, 5))
+    } else {
+      Nil
+    }
   }
 
 
 
-
-
-  def clear ={
+  def clear(): Unit ={
     print("\033[H\033[2J")
   }
 
@@ -64,9 +83,18 @@ object reader {
     val steps = List.range(bW, bH*bW+bW, bW)
     val filled: List[(Int, Int, String)] = blank.map(s =>  if(things.map(_.getIndex).contains(s._1)) {
       val thing = things(things.indexWhere(p => p.getIndex == s._1))
-      (thing.getIndex, 2, thing.getLook())
+      (thing.getIndex, 2, thing.getLook)
     } else s)
     steps.map(s => filled.slice(0, s).takeRight(bW))
   }
 
+
+  def generateColour: String ={
+    Random.nextInt(4) match {
+      case 0 => "red"
+      case 1 => "blue"
+      case 2 => "green"
+      case _ => "yellow"
+    }
+  }
 }
