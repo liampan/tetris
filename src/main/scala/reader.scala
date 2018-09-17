@@ -30,7 +30,7 @@ object reader {
 
     board.foreach(t => moveTetromino(t, userInput))
 
-    collison(board)
+    collision(board)
 
     fullLineCheck(board) ++ spawn(tick)
   }
@@ -59,10 +59,12 @@ object reader {
     board.filterNot(t => fullLines.contains(t.getIndex/10))
   }
 
-  def collison(board: List[Tetromino]): Unit ={
+  // top line freezes due to second, third blocks still falling ... some kind of exception from collision rule needed
+
+  def collision(board: List[Tetromino]): Unit ={
     board.foreach(t => if(t.getIndex+10>150) t.stopMove)
-    val movingTets = board.filter(t => t.canMove)
-    val nonMovingTetsIndexes = board.filterNot(t => t.canMove).map(_.getIndex).toSet
+    val movingTets = board.filter(t =>  t.canFall)
+    val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
     val movingTetsFutureIndexes = movingTets.map(_.getIndex+10).toSet
     if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.stopMove)}
   }
