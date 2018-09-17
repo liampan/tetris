@@ -4,18 +4,40 @@ object reader {
     val con = new jline.console.ConsoleReader
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
-    val charStream = Stream.iterate(0)(x => nbis.read(1000))
+    val charStream = Stream.iterate(0)(x => nbis.read(100))
 
     charStream.foldLeft("")((string ,key) => {
-      val ns = string
+      val ns: String = string
+      val userInput: Char = key.toChar
+      var tick = 0
       clear
       println("\n\n")
-      println(key.toChar)
-      printBoard(Nil,20)
+      println(userInput)
+      printBoard(board,10, 15)
+      println(board.head.getIndex())
+      parse(board, userInput, tick)
       ns
     })
 
   }
+
+  val board: List[Tetromino] = List(new Tetromino("dot", "red", 15))
+
+
+
+  def parse(b: List[Tetromino],userInput: Char, tick: Int) ={
+    if (tick%5 == 0){
+      b.foreach(t => t.fall(10))}
+    b.foreach(t =>
+    userInput match {
+      case 'a' => t.moveLeft()
+      case 'd' => t.moveRight()
+      case _   =>
+    })
+  }
+
+
+
 
 
   def clear ={
@@ -23,9 +45,9 @@ object reader {
   }
 
 
-  def printBoard(board: List[Int], bS: Int): Unit = {
-    val printable = boardConverter(board, bS)
-    println("┏" + "━" * bS * 2 + "━┓")
+  def printBoard(board: List[Tetromino], bW: Int, bH: Int): Unit = {
+    val printable = boardConverter(board, bW, bH)
+    println("┏" + "━" * bW * 2 + "━┓")
     printable.foreach(row => {
       print("┃ ")
       row.foreach(cell => {
@@ -33,14 +55,17 @@ object reader {
       })
       println("┃")
     })
-    println("┗" + "━" * bS * 2 + "━┛")
+    println("┗" + "━" * bW * 2 + "━┛")
   }
 
-  def boardConverter(things: List[Int], bS: Int): List[List[(Int, Int, String)]] = {
-    val blank = List.range(0, 100).map(i => (i, 0, "blank"))
-    val steps = List.range(bS, bS*bS+bS, bS)
-    val filled: List[(Int, Int, String)] = blank
-    steps.map(s => filled.slice(0, s).takeRight(bS))
+  def boardConverter(things: List[Tetromino], bW: Int, bH: Int): List[List[(Int, Int, String)]] = {
+    val blank = List.range(0, bW*bH).map(i => (i, 0, "blank"))
+    val steps = List.range(bW, bH*bW+bW, bW)
+    val filled: List[(Int, Int, String)] = blank.map(s =>  if(things.map(_.getIndex).contains(s._1)) {
+      val thing = things(things.indexWhere(p => p.getIndex == s._1))
+      (thing.getIndex, 2, thing.getLook())
+    } else s)
+    steps.map(s => filled.slice(0, s).takeRight(bW))
   }
 
 }
