@@ -28,7 +28,12 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
     }
   }
 
-  def stopMove={
+  def restartGravity ={
+    canFall = true
+  }
+
+
+  def stopMove ={
     canMove = false
     canFall = false
   }

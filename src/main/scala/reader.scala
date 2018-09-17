@@ -2,7 +2,7 @@ import scala.util.Random
 
 object reader {
 
-  val emptyBoard: List[Tetromino] = List()
+  val emptyBoard: List[Tetromino] = List(new Tetromino("dot", "red", 5))
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -51,11 +51,16 @@ object reader {
     val mapped = lines.groupBy(i=>i).mapValues(_.length)
 
     val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
-
+    if (fullLines.nonEmpty) {
+      val lowestLine = fullLines.max
+      val aboveLine = board.filter(t => t.getIndex < lowestLine * 10)
+      aboveLine.foreach(t => t.restartGravity)
+    }
     board.filterNot(t => fullLines.contains(t.getIndex/10))
   }
 
   def collison(board: List[Tetromino]): Unit ={
+    board.foreach(t => if(t.getIndex+10>150) t.stopMove)
     val movingTets = board.filter(t => t.canMove)
     val nonMovingTetsIndexes = board.filterNot(t => t.canMove).map(_.getIndex).toSet
     val movingTetsFutureIndexes = movingTets.map(_.getIndex+10).toSet
