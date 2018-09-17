@@ -1,28 +1,40 @@
-class Tetromino(shape: String, colour: String,private var index: Int) {
+class Tetromino(shape: String, colour: String, private var index: Int) {
 
-  def getIndex():Int = {
+  var canMove = true
+
+  def getIndex:Int = {
     this.index
   }
 
-  def moveLeft() ={
-    if ((index-1)/10 == index/10 && index-1 > 0) {
+  def moveLeft ={
+    if (canMove && (index-1)/10 == index/10 && index-1 > 0) {
       index = index - 1
     }
   }
 
-  def moveRight() ={
-    if ((index+1)%10 != 0) {
+  def moveRight ={
+    if (canMove && (index+1)%10 != 0) {
       index = index + 1
     }
   }
 
   def fall(boardWidth: Int) ={
-    index = index + boardWidth
+    if ((index+boardWidth) < 150 && canMove) {
+      index = index + boardWidth
+    } else {
+      stopMove
+    }
   }
 
-  def getLook() ={
+  def stopMove={
+    canMove = false
+  }
+
+  def getLook ={
     val consoleColor = this.colour match {
       case "red" => s"${Console.RED}"
+      case "green" => s"${Console.GREEN}"
+      case "blue" => s"${Console.BLUE}"
       case _ => s"${Console.YELLOW}"
     }
 
