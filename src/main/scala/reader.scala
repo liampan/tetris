@@ -11,11 +11,18 @@ object reader {
       clear
       println("\n\n")
       println(key.toChar)
-      printBoard(Nil,20)
+      printBoard(Nil,10, 15)
       ns
     })
 
   }
+
+  val board: List[Tetromino] = List(new Tetromino("dot", "red", 5))
+
+
+
+
+
 
 
   def clear ={
@@ -23,9 +30,9 @@ object reader {
   }
 
 
-  def printBoard(board: List[Int], bS: Int): Unit = {
-    val printable = boardConverter(board, bS)
-    println("┏" + "━" * bS * 2 + "━┓")
+  def printBoard(board: List[Int], bW: Int, bH: Int): Unit = {
+    val printable = boardConverter(board, bW, bH)
+    println("┏" + "━" * bW * 2 + "━┓")
     printable.foreach(row => {
       print("┃ ")
       row.foreach(cell => {
@@ -33,14 +40,14 @@ object reader {
       })
       println("┃")
     })
-    println("┗" + "━" * bS * 2 + "━┛")
+    println("┗" + "━" * bW * 2 + "━┛")
   }
 
-  def boardConverter(things: List[Int], bS: Int): List[List[(Int, Int, String)]] = {
-    val blank = List.range(0, 100).map(i => (i, 0, "blank"))
-    val steps = List.range(bS, bS*bS+bS, bS)
+  def boardConverter(things: List[Int], bW: Int, bH: Int): List[List[(Int, Int, String)]] = {
+    val blank = List.range(0, bW*bH).map(i => (i, 0, "blank"))
+    val steps = List.range(bW, bH*bW+bW, bW)
     val filled: List[(Int, Int, String)] = blank
-    steps.map(s => filled.slice(0, s).takeRight(bS))
+    steps.map(s => filled.slice(0, s).takeRight(bW))
   }
 
 }
