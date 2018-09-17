@@ -26,21 +26,33 @@ object reader {
   }
 
   def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
-    if (tick%10 == 0){board.foreach(t => t.fall(10))}
+    if (tick%5 == 0){board.foreach(t => t.fall(10))}
 
     board.foreach(t => moveTetromino(t, userInput))
 
     collison(board)
 
-    board ++ spawn(tick)
+    fullLineCheck(board) ++ spawn(tick)
   }
 
   def moveTetromino(block: Tetromino, userInput: Char): Unit = {
     userInput match {
       case 'a' => block.moveLeft
       case 'd' => block.moveRight
+      case 'w' => //rotate
       case _   =>
     }
+  }
+
+  def fullLineCheck(board: List[Tetromino]): List[Tetromino] ={
+    val nonMovingTets = board.filterNot(_.canMove)
+    val lines = nonMovingTets.map(_.getIndex).map(i => i/10)
+
+    val mapped = lines.groupBy(i=>i).mapValues(_.length)
+
+    val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
+
+    board.filterNot(t => fullLines.contains(t.getIndex/10))
   }
 
   def collison(board: List[Tetromino]): Unit ={
@@ -51,13 +63,12 @@ object reader {
   }
 
   def spawn(tick: Int): List[Tetromino] ={
-    if (tick%150 == 0) {
+    if (tick%75 == 0) {
       List(new Tetromino("dot", generateColour, 5))
     } else {
       Nil
     }
   }
-
 
 
   def clear(): Unit ={
