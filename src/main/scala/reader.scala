@@ -5,11 +5,12 @@ object reader {
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
     val charStream = Stream.iterate(0)(x => nbis.read(100))
+    var tick = 0
 
     charStream.foldLeft("")((string ,key) => {
       val ns: String = string
       val userInput: Char = key.toChar
-      var tick = 0
+      tick +=1
       clear
       println("\n\n")
       println(userInput)
@@ -26,7 +27,7 @@ object reader {
 
 
   def parse(b: List[Tetromino],userInput: Char, tick: Int) ={
-    if (tick%5 == 0){
+    if (tick%10 == 0){
       b.foreach(t => t.fall(10))}
     b.foreach(t =>
     userInput match {
