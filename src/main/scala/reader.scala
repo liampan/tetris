@@ -14,10 +14,10 @@ object reader {
     charStream.foldLeft(emptyBoard)((currentBoard, key) => {
       val userInput: Char = key.toChar
       clear()
-      println("input : "+userInput)
       println("\n\n")
       printBoard(currentBoard,10, 15)
       println(tick)
+      gameOver(currentBoard)
       val nb = parse(currentBoard, userInput, tick)
       tick +=1
       nb
@@ -59,7 +59,9 @@ object reader {
     board.filterNot(t => fullLines.contains(t.getIndex/10))
   }
 
-  // top line freezes due to second, third blocks still falling ... some kind of exception from collision rule needed
+  def gameOver(board: List[Tetromino]): Unit ={
+    if (board.exists(t => t.getIndex/10 == 0 && !t.canMove && !t.canFall )) System.exit(0)
+  }
 
   def collision(board: List[Tetromino]): Unit ={
     board.foreach(t => if(t.getIndex+10>150) t.stopMove)
@@ -67,11 +69,13 @@ object reader {
     val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
     val movingTetsFutureIndexes = movingTets.map(_.getIndex+10).toSet
     if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.stopMove)}
+    board.foreach(t => if(t.canMove) t.restartGravity)
   }
 
   def spawn(tick: Int): List[Tetromino] ={
     if (tick%75 == 0) {
-      List(new Tetromino("dot", generateColour, 5))
+      val colour = generateColour
+      List(new Tetromino("dot", colour, 5), new Tetromino("dot", colour,6))
     } else {
       Nil
     }
