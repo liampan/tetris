@@ -2,6 +2,8 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
 
   var canMove = true
 
+  var canFall = true
+
   def getIndex:Int = {
     this.index
   }
@@ -19,15 +21,21 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
   }
 
   def fall(boardWidth: Int) ={
-    if ((index+boardWidth) < 150 && canMove) {
+    if ((index+boardWidth) < 150 && canFall) {
       index = index + boardWidth
     } else {
       stopMove
     }
   }
 
-  def stopMove={
+  def restartGravity ={
+    canFall = true
+  }
+
+
+  def stopMove ={
     canMove = false
+    canFall = false
   }
 
   def getLook ={
