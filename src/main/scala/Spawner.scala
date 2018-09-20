@@ -2,6 +2,10 @@ import scala.util.Random
 
 object Spawner {
 
+  //TODO :
+  // + add other tetrinmo shapes, J, S & Z
+  // + add rotation fuction - Will need extra collision detection
+  // FIX movement bug as it shape crossed the spawn/board line, when shape half way accross and moves only half shape responds.
 
   def spawn ={
     Random.nextInt(4) match {
