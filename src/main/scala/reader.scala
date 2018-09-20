@@ -94,7 +94,7 @@ object reader {
 
   def spawn(tick: Int): List[Tetromino] ={
     if (tick%80 == 0) {
-      Spawner.spawnSquare
+      Spawner.spawn
     } else {
       Nil
     }
