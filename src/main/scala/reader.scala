@@ -62,12 +62,13 @@ object reader {
     if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
   }
 
-
+//TODO BLOCK TO BLOCK COLLISION LEFT AND RIGHT
 
   def collision(board: List[Tetromino]): Unit ={
 
     val movingTets = board.filter(t =>  t.canFall)
     val playerTets = board.filter(t =>  t.userCanControl)
+    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
     val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
     val movingTetsFutureIndexes = board.filter(t =>  t.canFall).map(_.getIndex+10).toSet
 
@@ -82,6 +83,12 @@ object reader {
 
     if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || t.getIndex == 0)){board.foreach(_.canMoveLeft = false)}
     //something has hit the left wall, nothing can move left
+
+    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){board.foreach(_.canMoveLeft = false)}
+    //something has hit a block to its left
+
+    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){board.foreach(_.canMoveRight = false)}
+    //something has hit a block to its right
 
   }
 
