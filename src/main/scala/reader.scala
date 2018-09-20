@@ -141,7 +141,7 @@ object reader {
     println()
     println(" Up next:")
     val preview = nextTet
-    val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37)
+    val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
     val ind: List[List[String]] = spawnPos.map(i => if(nextTet.map(_.getIndex).contains(i)) "■" else " ").grouped(4).toList
 
     println("┏━" + "━"*8 + "━┓")
