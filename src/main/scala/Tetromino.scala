@@ -13,32 +13,21 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
   }
 
   def moveLeft(board: List[Tetromino]) ={
+
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
     val userControlledTets = board.filter(_.userCanControl)
-    if (uncontrolledTetsIndexes.contains(index-1)){userControlledTets.foreach(_.canMoveLeft = false)}
 
-
-    //TODO second spawn has no userControl
-    val notOnLeftEdge = (index-1)/10 == index/10
-    if (!notOnLeftEdge){userControlledTets.foreach(_.canMoveLeft = false)}
-
-    if (canMoveLeft && userCanControl && notOnLeftEdge && index-1 > 0 && !uncontrolledTetsIndexes.contains(index-1)) {
+    if (canMoveLeft && userCanControl && index-1 > 0 && !uncontrolledTetsIndexes.contains(index-1)) {
       userControlledTets.foreach(_.canMoveRight = true)
       index = index - 1
     }
   }
 
-  //TODO this has bug when hitting the Right wall.
-
   def moveRight(board: List[Tetromino]) ={
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
-    val userControlledTets = board.filter(_.userCanControl)
-    if (uncontrolledTetsIndexes.contains(index+1)){userControlledTets.foreach(_.canMoveRight = false)}
+    val userControlledTets = board.filter(t => t.userCanControl || t.canFall)
 
-    val notOnRightEdge = (index+1)%10 != 0
-    if (!notOnRightEdge){userControlledTets.foreach(_.canMoveRight = false)}
-
-    if (canMoveRight && userCanControl && notOnRightEdge && !uncontrolledTetsIndexes.contains(index+1)) {
+    if (canMoveRight && userCanControl && !uncontrolledTetsIndexes.contains(index+1)) {
       userControlledTets.foreach(_.canMoveLeft = true)
       index = index + 1
     }
@@ -59,8 +48,6 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
 
   def freeze ={
     userCanControl = false
-    canMoveRight = false
-    canMoveLeft = false
     canFall = false
   }
 

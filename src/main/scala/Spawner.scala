@@ -3,17 +3,29 @@ import scala.util.Random
 object Spawner {
 
   def spawn ={
-    Random.nextInt(3) match {
+    Random.nextInt(4) match {
       case 0 => spawnLShape
       case 1 => spawnLineHoriz
-      case _ => spawnDot
+      case 2 => spawnTShape
+      case _ => spawnSquare
     }
   }
 
-  def spawnDot={
+  def spawnSquare={
     val colour = generateColour
-    List(new Tetromino("dot", colour, 5))
+    List(new Tetromino("square", colour, 3),new Tetromino("square", colour, 4),
+      new Tetromino("square", colour, 14),new Tetromino("square", colour, 13))
   }
+
+  def spawnTShape ={
+    val colour = generateColour
+    List(
+      new Tetromino("Tshape", colour, 3),
+      new Tetromino("Tshape", colour, 4),
+      new Tetromino("Tshape", colour, 14),
+      new Tetromino("Tshape", colour, 5))
+  }
+
 
   def spawnLineHoriz ={
     val colour = generateColour
