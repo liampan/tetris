@@ -47,7 +47,10 @@ object Spawner {
       case 0 => "red"
       case 1 => "blue"
       case 2 => "green"
+      case 3 => "magenta"
       case _ => "yellow"
     }
   }
+  case "magenta" => s"${Console.MAGENTA}"
+  case "cyan" => s"${Console.CYAN}"
 }

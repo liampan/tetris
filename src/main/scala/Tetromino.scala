@@ -56,6 +56,8 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
       case "red" => s"${Console.RED}"
       case "green" => s"${Console.GREEN}"
       case "blue" => s"${Console.BLUE}"
+      case "magenta" => s"${Console.MAGENTA}"
+      case "cyan" => s"${Console.CYAN}"
       case _ => s"${Console.YELLOW}"
     }
 
