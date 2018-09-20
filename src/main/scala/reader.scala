@@ -1,8 +1,7 @@
-import scala.util.Random
 
 object reader {
 
-  val emptyBoard: List[Tetromino] = List(new Tetromino("dot", "red", 5))
+  val emptyBoard: List[Tetromino] = List()
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -28,24 +27,24 @@ object reader {
   def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
     if (tick%5 == 0){board.foreach(t => t.fall(10))}
 
-    board.foreach(t => moveTetromino(t, userInput))
+    board.foreach(t => moveTetromino(t, userInput, board))
 
     collision(board)
 
     fullLineCheck(board) ++ spawn(tick)
   }
 
-  def moveTetromino(block: Tetromino, userInput: Char): Unit = {
+  def moveTetromino(block: Tetromino, userInput: Char, board: List[Tetromino]): Unit = {
     userInput match {
-      case 'a' => block.moveLeft
-      case 'd' => block.moveRight
+      case 'a' => block.moveLeft(board)
+      case 'd' => block.moveRight(board)
       case 'w' => //rotate
-      case _   =>
+      case _   => //speeds upstream
     }
   }
 
   def fullLineCheck(board: List[Tetromino]): List[Tetromino] ={
-    val nonMovingTets = board.filterNot(_.canMove)
+    val nonMovingTets = board.filterNot(_.userCanControl)
     val lines = nonMovingTets.map(_.getIndex).map(i => i/10)
 
     val mapped = lines.groupBy(i=>i).mapValues(_.length)
@@ -60,32 +59,43 @@ object reader {
   }
 
   def gameOver(board: List[Tetromino]): Unit ={
-    if (board.exists(t => t.getIndex/10 == 0 && !t.canMove && !t.canFall )) System.exit(0)
+    if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
   }
 
+
+
   def collision(board: List[Tetromino]): Unit ={
-    board.foreach(t => if(t.getIndex+10>150) t.stopMove)
+
     val movingTets = board.filter(t =>  t.canFall)
+    val playerTets = board.filter(t =>  t.userCanControl)
     val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
-    val movingTetsFutureIndexes = movingTets.map(_.getIndex+10).toSet
-    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.stopMove)}
-    board.foreach(t => if(t.canMove) t.restartGravity)
+    val movingTetsFutureIndexes = board.filter(t =>  t.canFall).map(_.getIndex+10).toSet
+
+    board.foreach(t => if(t.getIndex+10>149) t.freeze)
+    //this block has hit the bottom so freezes
+
+    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.freeze)}
+    //a moving block has hit a frozen block
+
+    if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){board.foreach(_.canMoveRight = false)}
+    //something has hit the right wall, nothing can move right
+
+    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || t.getIndex == 0)){board.foreach(_.canMoveLeft = false)}
+    //something has hit the left wall, nothing can move left
+
   }
 
   def spawn(tick: Int): List[Tetromino] ={
-    if (tick%75 == 0) {
-      val colour = generateColour
-      List(new Tetromino("dot", colour, 5), new Tetromino("dot", colour,6))
+    if (tick%80 == 0) {
+      Spawner.spawn
     } else {
       Nil
     }
   }
 
-
   def clear(): Unit ={
     print("\033[H\033[2J")
   }
-
 
   def printBoard(board: List[Tetromino], bW: Int, bH: Int): Unit = {
     val printable = boardConverter(board, bW, bH)
@@ -111,12 +121,5 @@ object reader {
   }
 
 
-  def generateColour: String ={
-    Random.nextInt(4) match {
-      case 0 => "red"
-      case 1 => "blue"
-      case 2 => "green"
-      case _ => "yellow"
-    }
-  }
+
 }
