@@ -14,11 +14,7 @@ object reader {
 
     charStream.foldLeft(spawn(tick))((currentBoard, key) => {
       val userInput: Char = key.toChar
-      clear()
-      println("\n\n")
-      previewBox()
-      printBoard(currentBoard,10, 15)
-      println(tick)
+      Printer(currentBoard, 10, nextTet)
       gameOver(currentBoard)
       val nb = parse(currentBoard, userInput, tick)
       tick +=1
@@ -61,9 +57,6 @@ object reader {
     board.filterNot(t => fullLines.contains(t.getIndex/10))
   }
 
-  def gameOver(board: List[Tetromino]): Unit ={
-    if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
-  }
 
   def collision(board: List[Tetromino]): Unit ={
 
@@ -90,7 +83,6 @@ object reader {
 
     if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){board.foreach(_.canMoveRight = false)}
     //something has hit a block to its right
-
   }
 
   def spawn(tick: Int): List[Tetromino] ={
@@ -105,51 +97,7 @@ object reader {
     }
   }
 
-  def clear(): Unit ={
-    print("\033[H\033[2J")
+  def gameOver(board: List[Tetromino]): Unit ={
+    if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
   }
-
-  def printBoard(board: List[Tetromino], bW: Int, bH: Int): Unit = {
-    val printable = boardConverter(board, bW, bH)
-    println("┏" + "━" * bW * 2 + "━┓")
-    printable.foreach(row => {
-      print("┃ ")
-      row.foreach(cell => {
-        print(s"${if (cell._2 == 0) s"${Console.BLACK}.${Console.RESET}" else cell._3} ")
-      })
-      println("┃")
-    })
-    println("┗" + "━" * bW * 2 + "━┛")
-  }
-
-  def boardConverter(things: List[Tetromino], bW: Int, bH: Int): List[List[(Int, Int, String)]] = {
-    val blank = List.range(0, bW*bH).map(i => (i, 0, "blank"))
-    val steps = List.range(bW, bH*bW+bW, bW)
-    val filled: List[(Int, Int, String)] = blank.map(s =>  if(things.map(_.getIndex).contains(s._1)) {
-      val thing = things(things.indexWhere(p => p.getIndex == s._1))
-      (thing.getIndex, 2, thing.getLook)
-    } else s)
-    steps.map(s => filled.slice(0, s).takeRight(bW))
-  }
-
-
-
-  def previewBox() ={
-    clear()
-    println()
-    println(tetrisSmall)
-    println()
-    println(" Up next:")
-    val preview = nextTet
-    val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
-    val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.getIndex).contains(i)) "■" else " ").grouped(4).toList
-
-    println("┏━" + "━"*8 + "━┓")
-    ind.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}
-    println("┗━" + "━"*8 + "━┛")
-  }
-
-  val tetrisSmall = s"${Console.BOLD}  ___ _____ _ ___ __\n   | |_  | |_) | (_ \n   | |__ | | \\_|___)${Console.RESET}"
-
-
 }

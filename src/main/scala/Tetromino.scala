@@ -12,6 +12,11 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
     this.index
   }
 
+
+  def getShape:String = {
+    this.shape
+  }
+
   def moveLeft(board: List[Tetromino]) ={
 
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
