@@ -43,14 +43,7 @@ object Spawner {
   }
 
   def generateColour: String ={
-    Random.nextInt(4) match {
-      case 0 => "red"
-      case 1 => "blue"
-      case 2 => "green"
-      case 3 => "magenta"
-      case _ => "yellow"
-    }
+    val colorList = List("red", "blue", "green", "magenta", "cyan", "yellow")
+    colorList(Random.nextInt(colorList.length))
   }
-  case "magenta" => s"${Console.MAGENTA}"
-  case "cyan" => s"${Console.CYAN}"
 }
