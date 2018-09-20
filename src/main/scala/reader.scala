@@ -1,7 +1,9 @@
 
 object reader {
 
-  val emptyBoard: List[Tetromino] = List()
+  var nextTet: List[Tetromino] = List()
+
+  var presTet: List[Tetromino] = List()
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -10,10 +12,11 @@ object reader {
     val charStream = Stream.iterate(0)(x => nbis.read(100))
     var tick = 0
 
-    charStream.foldLeft(emptyBoard)((currentBoard, key) => {
+    charStream.foldLeft(spawn(tick))((currentBoard, key) => {
       val userInput: Char = key.toChar
       clear()
       println("\n\n")
+      previewBox()
       printBoard(currentBoard,10, 15)
       println(tick)
       gameOver(currentBoard)
@@ -62,8 +65,6 @@ object reader {
     if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
   }
 
-//TODO BLOCK TO BLOCK COLLISION LEFT AND RIGHT
-
   def collision(board: List[Tetromino]): Unit ={
 
     val movingTets = board.filter(t =>  t.canFall)
@@ -93,9 +94,13 @@ object reader {
   }
 
   def spawn(tick: Int): List[Tetromino] ={
-    if (tick%80 == 0) {
-      Spawner.spawn
-    } else {
+    val spawnRate = 100
+    if (tick%spawnRate == 0) {
+      presTet = nextTet
+      nextTet = Spawner.spawn
+      presTet
+    }
+    else {
       Nil
     }
   }
@@ -127,6 +132,24 @@ object reader {
     steps.map(s => filled.slice(0, s).takeRight(bW))
   }
 
+
+
+  def previewBox() ={
+    clear()
+    println()
+    println(tetrisSmall)
+    println()
+    println(" Up next:")
+    val preview = nextTet
+    val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
+    val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.getIndex).contains(i)) "■" else " ").grouped(4).toList
+
+    println("┏━" + "━"*8 + "━┓")
+    ind.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}
+    println("┗━" + "━"*8 + "━┛")
+  }
+
+  val tetrisSmall = s"${Console.BOLD}  ___ _____ _ ___ __\n   | |_  | |_) | (_ \n   | |__ | | \\_|___)${Console.RESET}"
 
 
 }
