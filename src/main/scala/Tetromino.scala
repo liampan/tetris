@@ -12,18 +12,24 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
     this.index
   }
 
+
+  def getShape:String = {
+    this.shape
+  }
+
   def moveLeft(board: List[Tetromino]) ={
 
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
     val userControlledTets = board.filter(_.userCanControl)
 
-    if (canMoveLeft && userCanControl && index-1 > 0 && !uncontrolledTetsIndexes.contains(index-1)) {
+    if (canMoveLeft && userCanControl && !uncontrolledTetsIndexes.contains(index-1)) {
       userControlledTets.foreach(_.canMoveRight = true)
       index = index - 1
     }
   }
 
   def moveRight(board: List[Tetromino]) ={
+
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
     val userControlledTets = board.filter(t => t.userCanControl || t.canFall)
 
