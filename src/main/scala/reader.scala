@@ -84,7 +84,7 @@ object reader {
 
     if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){board.foreach(_.canMoveRight = false)}
     //something has hit a block to its right
-    
+
   }
 
   def spawn(tick: Int): List[Tetromino] ={

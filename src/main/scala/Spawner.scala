@@ -3,10 +3,7 @@ import scala.util.Random
 object Spawner {
 
   //TODO :
-  // + add other tetrinmo shapes, J, S & Z **DONE**
-  // move printer to seperate class **DONE**
   // + add rotation fuction - Will need extra collision detection
-  // FIX movement bug as it shape crossed the spawn/board line, when shape half way accross and moves only half shape responds.
 
   def spawn ={
     val shapes = List(spawnSquare,spawnTShape,spawnLShape,spawnJShape,spawnLine,spawnSShape,spawnZShape)
