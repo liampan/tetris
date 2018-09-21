@@ -1,9 +1,9 @@
 
 object reader {
 
-  var nextTet: List[Tetromino] = List()
+  var nextTet: List[Tetromino] = Nil
 
-  var presTet: List[Tetromino] = List()
+  var presTet: List[Tetromino] = Nil
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -33,10 +33,10 @@ object reader {
     fullLineCheck(board) ++ spawn(tick)
   }
 
-  def moveTetromino(block: Tetromino, userInput: Char, board: List[Tetromino]): Unit = {
+  def moveTetromino(tetromino: Tetromino, userInput: Char, board: List[Tetromino]): Unit = {
     userInput match {
-      case 'a' => block.moveLeft(board)
-      case 'd' => block.moveRight(board)
+      case 'a' => tetromino.moveLeft(board)
+      case 'd' => tetromino.moveRight(board)
       case 'w' => //rotate
       case _   => //speeds upstream
     }
@@ -66,6 +66,7 @@ object reader {
     val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
     val movingTetsFutureIndexes = board.filter(t =>  t.canFall).map(_.getIndex+10).toSet
 
+
     board.foreach(t => if(t.getIndex+10>149) t.freeze)
     //this block has hit the bottom so freezes
 
@@ -75,7 +76,7 @@ object reader {
     if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){board.foreach(_.canMoveRight = false)}
     //something has hit the right wall, nothing can move right
 
-    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || t.getIndex == 0)){board.foreach(_.canMoveLeft = false)}
+    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0)){board.foreach(_.canMoveLeft = false)}
     //something has hit the left wall, nothing can move left
 
     if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){board.foreach(_.canMoveLeft = false)}
@@ -83,6 +84,7 @@ object reader {
 
     if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){board.foreach(_.canMoveRight = false)}
     //something has hit a block to its right
+    
   }
 
   def spawn(tick: Int): List[Tetromino] ={
