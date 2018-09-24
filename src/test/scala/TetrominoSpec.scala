@@ -20,6 +20,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
     "not change the index off of the board" in{
       val block = new Tetromino("dot", "red", 0)
+      reader.collision(List(block))
       block.moveLeft(List(block))
 
       block.getIndex mustEqual 0
@@ -27,6 +28,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
     "not change the index off of the board on a different line" in{
       val block = new Tetromino("dot", "red", 10)
+      reader.collision(List(block))
       block.moveLeft(List(block))
 
       block.getIndex mustEqual 10
@@ -43,6 +45,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
     "not change the index off of the board" in{
       val block = new Tetromino("dot", "red", 9)
+      reader.collision(List(block))
       block.moveRight(List(block))
 
       block.getIndex mustEqual 9
@@ -50,6 +53,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
     "not change the index off of the board on a different line" in{
       val block = new Tetromino("dot", "red", 19)
+      reader.collision(List(block))
       block.moveRight(List(block))
 
       block.getIndex mustEqual 19
