@@ -5,66 +5,61 @@ object Spawner {
   //TODO :
   // + add rotation fuction - Will need extra collision detection
 
-  def spawn ={
-    val shapes = List(spawnSquare,spawnTShape,spawnLShape,spawnJShape,spawnLine,spawnSShape,spawnZShape)
+  def spawn = {
+    val shapes = List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
     shapes(Random.nextInt(shapes.length))
   }
 
-  private def spawnSShape={
+  private def spawnSShape = {
     val colour = generateColour
-    List(
-      new Tetromino("S", colour, -37),
-      new Tetromino("S", colour, -27), new Tetromino("S", colour, -26),
-                                       new Tetromino("S", colour, -16))
+    val name = "Sshape"
+    val indexes = List(-37, -27, -26, -16)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnZShape={
+  private def spawnZShape = {
     val colour = generateColour
-    List(
-                                       new Tetromino("Z", colour, -36),
-      new Tetromino("Z", colour, -27), new Tetromino("Z", colour, -26),
-      new Tetromino("Z", colour, -17))
+    val name = "Zshape"
+    val indexes = List(-36, -27, -26, -17)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnSquare={
+  private def spawnSquare = {
     val colour = generateColour
-    List(
-      new Tetromino("square", colour,-26),new Tetromino("square", colour, -25),
-      new Tetromino("square", colour, -16),new Tetromino("square", colour, -15))
+    val name = "square"
+    val indexes = List(-26, -25, -16, -15)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnTShape ={
+  private def spawnTShape = {
     val colour = generateColour
-    List(                                   new Tetromino("Tshape", colour, -36),
-      new Tetromino("Tshape", colour, -27), new Tetromino("Tshape", colour, -26), new Tetromino("Tshape", colour, -25))
+    val name = "Tshape"
+    val indexes = List(-36, -27, -26, -25)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnLine ={
+  private def spawnLine = {
     val colour = generateColour
-    List(
-      new Tetromino("line", colour, -36),
-      new Tetromino("line", colour, -26),
-      new Tetromino("line", colour, -16),
-      new Tetromino("line", colour, -6))
+    val name = "line"
+    val indexes = List(-36, -26, -16, -6)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnLShape ={
+  private def spawnLShape = {
     val colour = generateColour
-    List(
-      new Tetromino("L", colour, -37), new Tetromino("L", colour, -36),
-                                       new Tetromino("L", colour, -26),
-                                       new Tetromino("L", colour, -16))
+    val name = "Lshape"
+    val indexes = List(-37, -36, -26, -16)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def spawnJShape ={
+  private def spawnJShape = {
     val colour = generateColour
-    List(
-      new Tetromino("J", colour, -36), new Tetromino("J", colour, -35),
-      new Tetromino("J", colour, -26),
-      new Tetromino("J", colour, -16))
+    val name = "Jshape"
+    val indexes = List(-36, -35, -26, -16)
+    indexes.map(new Tetromino(name, colour, _))
   }
 
-  private def generateColour: String ={
+  private def generateColour: String = {
     val colorList = List("red", "blue", "green", "magenta", "cyan", "yellow")
     colorList(Random.nextInt(colorList.length))
   }

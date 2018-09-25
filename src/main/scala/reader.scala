@@ -14,8 +14,6 @@ object reader {
 
     charStream.foldLeft(spawn(tick))((currentBoard, key) => {
       val userInput: Char = key.toChar
-      Printer(currentBoard, 10, nextTet)
-      gameOver(currentBoard)
       val nb = parse(currentBoard, userInput, tick)
       tick +=1
       nb
@@ -24,11 +22,15 @@ object reader {
   }
 
   def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
+    Printer(board, 10, nextTet)
+
     if (tick%5 == 0){board.foreach(t => t.fall(10))}
 
     board.foreach(t => moveTetromino(t, userInput, board))
 
     collision(board)
+
+    gameOver(board)
 
     fullLineCheck(board) ++ spawn(tick)
   }
@@ -76,7 +78,8 @@ object reader {
     if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){board.foreach(_.canMoveRight = false)}
     //something has hit the right wall, nothing can move right
 
-    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0)){board.foreach(_.canMoveLeft = false)}
+    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0))
+    {board.foreach(_.canMoveLeft = false)}
     //something has hit the left wall, nothing can move left
 
     if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){board.foreach(_.canMoveLeft = false)}
