@@ -21,18 +21,12 @@ object reader {
 
   }
 
-  var gravity = true
-
   def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
     Printer(board, 10, nextTet)
 
-    if (tick%5 == 0 && gravity ){board.foreach(t => t.fall(10))}
-
-    //board.foreach(t => moveTetromino(t, userInput, board))
+    if (tick%5 == 0){board.foreach(t => t.fall(10))}
 
     moveTetromino(userInput, board)
-
-    println(if(presTet.nonEmpty){"*** "+ presTet.head.rotateState} else "--- ")
 
     collision(board)
 
@@ -46,7 +40,6 @@ object reader {
       case 'a' => board.foreach(tetromino => tetromino.moveLeft(board))
       case 'd' => board.foreach(tetromino => tetromino.moveRight(board))
       case 'w' => Rotate.rotate(board)
-      case 'g' => gravity = false
       case _   => //speeds upstream
     }
   }

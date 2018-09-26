@@ -18,12 +18,9 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
     this.index = newIndex
   }
 
-
   def getShape:String = {
     this.shape
   }
-
-
 
   def moveLeft(board: List[Tetromino]) ={
 
