@@ -10,8 +10,7 @@ object Printer {
   }
 
   def printTitle ={
-    println(tetrisSmall)
-    println()
+    println(tetrisSmall + "\n")
   }
 
   def printBoard(board: List[Tetromino], bW: Int): Unit = {
