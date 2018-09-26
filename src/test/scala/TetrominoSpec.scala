@@ -10,15 +10,35 @@ class TetrominoSpec extends WordSpec with MustMatchers {
     }
   }
 
+  "getLook" must {
+
+    val colours = List(
+      ("red", Console.RED),
+      ("blue", Console.BLUE),
+      ("cyan", Console.CYAN),
+      ("green", Console.GREEN),
+      ("yellow", Console.YELLOW),
+      ("magenta", Console.MAGENTA))
+
+    for ((colour, console) <- colours) {
+      s"return a $colour coloured block" in {
+        val block = new Tetromino("dot", colour, 5)
+
+        block.getLook mustEqual s"$console■${Console.RESET}"
+      }
+    }
+  }
+
   "moveLeft" must {
     "change an index by -1" in {
       val block = new Tetromino("dot", "red", 5)
+      reader.collision(List(block))
       block.moveLeft(List(block))
 
       block.getIndex mustEqual 4
     }
 
-    "not change the index off of the board" in{
+    "not change the index off of the board" in {
       val block = new Tetromino("dot", "red", 0)
       reader.collision(List(block))
       block.moveLeft(List(block))
@@ -26,7 +46,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
       block.getIndex mustEqual 0
     }
 
-    "not change the index off of the board on a different line" in{
+    "not change the index off of the board on a different line" in {
       val block = new Tetromino("dot", "red", 10)
       reader.collision(List(block))
       block.moveLeft(List(block))
@@ -38,12 +58,13 @@ class TetrominoSpec extends WordSpec with MustMatchers {
   "moveRight" must {
     "change an index by +1" in {
       val block = new Tetromino("dot", "red", 5)
+      reader.collision(List(block))
       block.moveRight(List(block))
 
       block.getIndex mustEqual 6
     }
 
-    "not change the index off of the board" in{
+    "not change the index off of the board" in {
       val block = new Tetromino("dot", "red", 9)
       reader.collision(List(block))
       block.moveRight(List(block))
@@ -51,7 +72,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
       block.getIndex mustEqual 9
     }
 
-    "not change the index off of the board on a different line" in{
+    "not change the index off of the board on a different line" in {
       val block = new Tetromino("dot", "red", 19)
       reader.collision(List(block))
       block.moveRight(List(block))
@@ -67,6 +88,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
       block.fall(boardWidth)
 
       block.getIndex mustEqual 15
+      block.canFall mustEqual true
     }
 
     "not fall off the bottom of the screen" in {
@@ -75,6 +97,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
       block.fall(boardWidth)
 
       block.getIndex mustEqual 145
+      block.canFall mustEqual false
     }
 
     "toggle a shapes movement ability" in {
@@ -85,6 +108,7 @@ class TetrominoSpec extends WordSpec with MustMatchers {
       block.moveRight(List(block))
 
       block.getIndex mustEqual 145
+      block.canFall mustEqual false
     }
   }
 
