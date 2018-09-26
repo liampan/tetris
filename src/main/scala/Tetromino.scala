@@ -8,14 +8,22 @@ class Tetromino(shape: String, colour: String, private var index: Int) {
 
   var canFall = true
 
+  var rotateState = 0
+
   def getIndex:Int = {
     this.index
+  }
+
+  def setIndex(newIndex: Int):Unit = {
+    this.index = newIndex
   }
 
 
   def getShape:String = {
     this.shape
   }
+
+
 
   def moveLeft(board: List[Tetromino]) ={
 

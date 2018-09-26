@@ -5,8 +5,8 @@ object Spawner {
   //TODO :
   // + add rotation fuction - Will need extra collision detection
 
-  def spawn = {
-    val shapes = List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
+  def spawn: List[Tetromino] = {
+    val shapes = List(spawnLShape) //List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
     shapes(Random.nextInt(shapes.length))
   }
 
