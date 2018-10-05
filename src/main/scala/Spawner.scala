@@ -4,7 +4,7 @@ import ShapeNames._
 object Spawner {
 
   def spawn: List[Tetromino] = {
-    val shapes = List(spawnLShape) //List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
+    val shapes = List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
     shapes(Random.nextInt(shapes.length))
   }
 
