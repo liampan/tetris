@@ -45,7 +45,7 @@ object Printer {
     val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
     val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.getIndex).contains(i)) "■" else " ").grouped(4).toList
 
-    println("┏━" + "━"*8 + "━┓" + s" ${preview.head.getShape}")
+    println("┏━" + "━"*8 + "━┓" + s" ")
     ind.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}
     println("┗━" + "━"*8 + "━┛")
   }

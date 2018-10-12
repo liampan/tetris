@@ -10,18 +10,19 @@ object reader {
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
     val charStream = Stream.iterate(0)(x => nbis.read(100))
-    var tick = 0
 
-    charStream.foldLeft(spawn(tick))((currentBoard, key) => {
+    charStream.foldLeft(Board(Spawner.spawn))((currentBoard, key) => {
       val userInput: Char = key.toChar
-      val nb = parse(currentBoard, userInput, tick)
-      tick +=1
+      val nb = parse(currentBoard, userInput)
       nb
     })
 
   }
 
-  def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
+  def parse(b: Board, userInput: Char): Board ={
+    val board = b.blocks
+    val tick = b.tick
+
     Printer(board, 10, nextTet)
 
     if (tick%5 == 0){board.foreach(t => t.fall(10))}
@@ -32,7 +33,7 @@ object reader {
 
     gameOver(board)
 
-    fullLineCheck(board) ++ spawn(tick)
+    b.copy(blocks = fullLineCheck(board) ++ spawn(b)).tickOne
   }
 
   def moveTetromino(userInput: Char, board: List[Tetromino]): Unit = {
@@ -90,7 +91,9 @@ object reader {
 
   }
 
-  def spawn(tick: Int): List[Tetromino] ={
+  def spawn(b: Board): List[Tetromino] ={
+    val tick = b.tick
+
     val spawnRate = 100
     if (tick%spawnRate == 0) {
       presTet = nextTet
