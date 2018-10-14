@@ -63,3 +63,15 @@ val board = Board(Nil)
 val boardLater = board.tickOne
 
 boardLater.tickOne
+
+val thing = "ac"
+val add = "b"
+
+val stuff = {
+  for {
+    a <- extend(thing)
+    c <- add
+  } yield (a,c)
+}
+
+def extend(b : String) = {b+b}
