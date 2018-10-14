@@ -1,38 +1,36 @@
 
 object reader {
 
-  var nextTet: List[Tetromino] = Nil
-
-  var presTet: List[Tetromino] = Nil
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
     val charStream = Stream.iterate(0)(x => nbis.read(100))
-    var tick = 0
 
-    charStream.foldLeft(spawn(tick))((currentBoard, key) => {
+    charStream.foldLeft(Board(Nil))((currentBoard, key) => {
       val userInput: Char = key.toChar
-      val nb = parse(currentBoard, userInput, tick)
-      tick +=1
-      nb
+      parse(currentBoard, userInput)
     })
-
   }
 
-  def parse(board: List[Tetromino], userInput: Char, tick: Int): List[Tetromino] ={
-    Printer(board, 10, nextTet)
+  def parse(board: Board, userInput: Char): Board ={
+    val blocks = board.blocks
+    val tick = board.tick
 
-    if (tick%5 == 0){board.foreach(t => t.fall(10))}
+    board.print
 
-    moveTetromino(userInput, board)
+    if (tick%5 == 0){blocks.foreach(t => t.fall(10))}
 
-    collision(board)
+    moveTetromino(userInput, blocks)
 
-    gameOver(board)
+    collision(blocks)
 
-    fullLineCheck(board) ++ spawn(tick)
+    gameOver(blocks)
+
+    val b = spawn(board)
+
+    fullLineCheck(b).tickOne
   }
 
   def moveTetromino(userInput: Char, board: List[Tetromino]): Unit = {
@@ -44,19 +42,21 @@ object reader {
     }
   }
 
-  def fullLineCheck(board: List[Tetromino]): List[Tetromino] ={
-    val nonMovingTets = board.filterNot(_.userCanControl)
+  def fullLineCheck(board: Board): Board ={
+    val blocks = board.blocks
+    val nonMovingTets = blocks.filterNot(_.userCanControl)
     val lines = nonMovingTets.map(_.getIndex).map(i => i/10)
 
     val mapped = lines.groupBy(i=>i).mapValues(_.length)
 
     val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
+    val increaseScoreBy = fullLines.length
     if (fullLines.nonEmpty) {
       val lowestLine = fullLines.max
-      val aboveLine = board.filter(t => t.getIndex < lowestLine * 10)
+      val aboveLine = blocks.filter(t => t.getIndex < lowestLine * 10)
       aboveLine.foreach(t => t.restartGravity)
     }
-    board.filterNot(t => fullLines.contains(t.getIndex/10))
+    board.copy(blocks = blocks.filterNot(t => fullLines.contains(t.getIndex/10)), score = board.score + increaseScoreBy)
   }
 
 
@@ -90,15 +90,19 @@ object reader {
 
   }
 
-  def spawn(tick: Int): List[Tetromino] ={
+  def spawn(board: Board): Board ={
+
+    val tick = board.tick
+
     val spawnRate = 100
     if (tick%spawnRate == 0) {
-      presTet = nextTet
-      nextTet = Spawner.spawn
-      presTet
+      board.copy(
+        blocks = board.blocks ++ board.nextTet,
+        nextTet = Spawner.spawn
+      )
     }
     else {
-      Nil
+      board
     }
   }
 
