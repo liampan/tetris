@@ -12,10 +12,9 @@ object Rotate {
         case `lShape` => rotateL(board)
         case `tee`    => rotateT(board)
         case `jShape` => rotateJ(board)
-        case `line`   => rotateLine(board)
         case `zShape` => rotateZ(board)
         case `sShape` => rotateS(board)
-        case _ => // do nothing
+        case `line`   => rotateLine(board)
       }
     }
   }
@@ -93,7 +92,7 @@ object Rotate {
   }
 
   private def rotateT(board: List[Tetromino]): Unit = {
-    val tets = board.filter(_.userCanControl)
+    val tets = board.filter(t => t.userCanControl && t.canMoveLeft && t.canMoveRight)
     val oneShape = tets.length == 4
     val canRotate = true // collision for when rotated.
 
