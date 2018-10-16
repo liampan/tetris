@@ -3,27 +3,30 @@ import ShapeNames._
 
 object Rotate {
 
-  def rotate(board: List[Tetromino]): Unit = {
-    val userControlled = board.filter(_.userCanControl)
+  def rotate(blocks: List[Tetromino]): List[Tetromino] = {
+    val userControlled: List[Tetromino] = blocks.filter(_.userCanControl)
+    val restOfBlocks: List[Tetromino] = blocks.filterNot(_.userCanControl)
     val oneShape = userControlled.length == 4
+    val canRotate = true // collision for when rotated.
 
-    if (userControlled.nonEmpty && oneShape) {
-      val canRotate = true // collision for when rotated.
+    if (userControlled.nonEmpty && oneShape && canRotate) {
 
-      if (canRotate) {
-        val moves : List[Int] = userControlled.head.getShape match {
-          case `lShape` => rotateL(userControlled)
-          case `tee`    => rotateT(userControlled)
-          case `jShape` => rotateJ(userControlled)
-          case `zShape` => rotateZ(userControlled)
-          case `sShape` => rotateS(userControlled)
-          case `line`   => rotateLine(userControlled)
-        }
-
-        userControlled.zip(moves).foreach { case (tet: Tetromino, moveBy: Int) => tet.setIndex(tet.getIndex + moveBy) }
-        userControlled.foreach(t => if (t.rotateState < 3) t.rotateState = t.rotateState + 1 else t.rotateState = 0)
+      val moves : List[Int] = userControlled.head.getShape match {
+        case `lShape` => rotateL(userControlled)
+        case `tee`    => rotateT(userControlled)
+        case `jShape` => rotateJ(userControlled)
+        case `zShape` => rotateZ(userControlled)
+        case `sShape` => rotateS(userControlled)
+        case `line`   => rotateLine(userControlled)
       }
+
+      val rotatedBlocks = userControlled.zip(moves).map{
+        case (tet: Tetromino, moveBy: Int) =>
+        tet.copy(index = tet.index + moveBy).rotated
+      }
+      restOfBlocks ++ rotatedBlocks
     }
+    else blocks
   }
 
   private def rotateS(tets: List[Tetromino]): List[Int] = {

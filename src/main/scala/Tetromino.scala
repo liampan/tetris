@@ -1,68 +1,67 @@
-class Tetromino(shape: String, colour: String, private var index: Int) {
+case class Tetromino(
+                      shape: String,
+                      colour: String,
+                      index: Int,
+                      userCanControl: Boolean = true,
+                      canMoveLeft: Boolean = true,
+                      canMoveRight: Boolean = true,
+                      canFall: Boolean = true,
+                      rotateState: Int = 0)
+{
 
-  var userCanControl = true
-
-  var canMoveLeft = true
-
-  var canMoveRight = true
-
-  var canFall = true
-
-  var rotateState = 0
+  def rotated: Tetromino ={
+    this.copy(rotateState = if(this.rotateState == 3) 0 else this.rotateState+1)
+  }
 
   def getIndex:Int = {
     this.index
   }
 
-  def setIndex(newIndex: Int):Unit = {
-    this.index = newIndex
+  def setIndex(newIndex: Int):Tetromino = {
+    this.copy(index = newIndex)
   }
 
   def getShape:String = {
     this.shape
   }
 
-  def moveLeft(board: List[Tetromino]) ={
-
+  def moveLeft(board: List[Tetromino]): Tetromino ={
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
-    val userControlledTets = board.filter(_.userCanControl)
 
-    if (canMoveLeft && userCanControl && !uncontrolledTetsIndexes.contains(index-1)) {
-      userControlledTets.foreach(_.canMoveRight = true)
-      index = index - 1
-    }
+    if (this.canMoveLeft && this.userCanControl && !uncontrolledTetsIndexes.contains(index-1)) {
+      this.copy(canMoveRight = true, index = this.index -1)
+    }else this
   }
 
-  def moveRight(board: List[Tetromino]) ={
-
+  def moveRight(board: List[Tetromino]): Tetromino ={
     val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
-    val userControlledTets = board.filter(t => t.userCanControl || t.canFall)
 
-    if (canMoveRight && userCanControl && !uncontrolledTetsIndexes.contains(index+1)) {
-      userControlledTets.foreach(_.canMoveLeft = true)
-      index = index + 1
-    }
+    if (canMoveRight && userCanControl && !uncontrolledTetsIndexes.contains(this.index+1)) {
+      this.copy(canMoveLeft = true, index = this.index +1)
+    }else this
   }
 
-  def fall(boardWidth: Int) ={
+  def fall(boardWidth: Int): Tetromino ={
     if ((index+boardWidth) < 150 && canFall) {
-      index = index + boardWidth
+      this.copy(index = index + boardWidth)
     } else {
-      freeze
+      this.freeze
     }
   }
 
-  def restartGravity ={
-    canFall = true
+  def restartGravity: Tetromino ={
+    this.copy(
+    canFall = true)
   }
 
 
-  def freeze ={
-    userCanControl = false
-    canFall = false
+  def freeze: Tetromino ={
+    this.copy(
+      userCanControl = false,
+      canFall = false)
   }
 
-  def getLook ={
+  def getLook: String ={
     val consoleColor = this.colour match {
       case "red"     => s"${Console.RED}"
       case "green"   => s"${Console.GREEN}"

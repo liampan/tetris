@@ -1,6 +1,4 @@
-
-object reader {
-
+object Reader {
 
   def main(args: Array[String]): Unit = {
     val con = new jline.console.ConsoleReader
@@ -22,23 +20,26 @@ object reader {
 
     if (tick%5 == 0){blocks.foreach(t => t.fall(10))}
 
-    moveTetromino(userInput, blocks)
+    val movedBoard = board.copy(blocks = moveTetromino(userInput, blocks))
 
-    collision(blocks)
+    collision(movedBoard)
 
-    gameOver(blocks)
-
-    val b = spawn(board)
-
-    fullLineCheck(b).tickOne
+    board
+      .gameOver
+      .fold(_ => board, board =>
+        board.spawn
+             .fullLineCheck
+             .tickOne)
   }
 
-  def moveTetromino(userInput: Char, board: List[Tetromino]): Unit = {
+  def moveTetromino(userInput: Char, board: List[Tetromino]): List[Tetromino] = {
+    val userControlledTets = board.filter(_.userCanControl)
+    val staticTets = board.filterNot(_.userCanControl)
     userInput match {
-      case 'a' => board.foreach(tetromino => tetromino.moveLeft(board))
-      case 'd' => board.foreach(tetromino => tetromino.moveRight(board))
+      case 'a' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveLeft(board))
+      case 'd' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveRight(board))
       case 'w' => Rotate.rotate(board)
-      case _   => //speeds upstream
+      case _   => board
     }
   }
 
@@ -60,53 +61,34 @@ object reader {
   }
 
 
-  def collision(board: List[Tetromino]): Unit ={
+  def collision(board: Board): Unit ={
+    val blocks = board.blocks
 
-    val movingTets = board.filter(t =>  t.canFall)
-    val playerTets = board.filter(t =>  t.userCanControl)
-    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
-    val nonMovingTetsIndexes = board.filterNot(t =>  t.canFall).map(_.getIndex).toSet
-    val movingTetsFutureIndexes = board.filter(t =>  t.canFall).map(_.getIndex+10).toSet
+    val movingTets = blocks.filter(t =>  t.canFall)
+    val playerTets = blocks.filter(t =>  t.userCanControl)
+    val uncontrolledTetsIndexes = blocks.filterNot(_.userCanControl).map(_.getIndex)
+    val nonMovingTetsIndexes = blocks.filterNot(t =>  t.canFall).map(_.getIndex).toSet
+    val movingTetsFutureIndexes = blocks.filter(t =>  t.canFall).map(_.getIndex+10).toSet
 
 
-    board.foreach(t => if(t.getIndex+10>149) t.freeze)
+    val a = blocks.map(t => if(t.getIndex+10>149) t.freeze else t)
     //this block has hit the bottom so freezes
 
-    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){board.foreach(_.freeze)}
+    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){blocks.foreach(_.freeze)}
     //a moving block has hit a frozen block
 
-    if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){board.foreach(_.canMoveRight = false)}
+    if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){blocks.foreach(_.canMoveRight = false)}
     //something has hit the right wall, nothing can move right
 
     if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0))
-    {board.foreach(_.canMoveLeft = false)}
+    {blocks.foreach(_.canMoveLeft = false)}
     //something has hit the left wall, nothing can move left
 
-    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){board.foreach(_.canMoveLeft = false)}
+    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){blocks.foreach(_.canMoveLeft = false)}
     //something has hit a block to its left
 
-    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){board.foreach(_.canMoveRight = false)}
+    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){blocks.foreach(_.canMoveRight = false)}
     //something has hit a block to its right
 
-  }
-
-  def spawn(board: Board): Board ={
-
-    val tick = board.tick
-
-    val spawnRate = 100
-    if (tick%spawnRate == 0) {
-      board.copy(
-        blocks = board.blocks ++ board.nextTet,
-        nextTet = Spawner.spawn
-      )
-    }
-    else {
-      board
-    }
-  }
-
-  def gameOver(board: List[Tetromino]): Unit ={
-    if (board.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )) System.exit(0)
   }
 }
