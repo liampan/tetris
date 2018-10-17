@@ -1,7 +1,7 @@
 import scala.util.Random
 import ShapeNames._
 
-object Spawner {
+object Spawner{
 
   def spawn: List[Tetromino] = {
     val shapes = List(spawnSquare, spawnTShape, spawnLShape, spawnJShape, spawnLine, spawnSShape, spawnZShape)
