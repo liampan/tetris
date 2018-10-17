@@ -18,18 +18,18 @@ object Reader {
 
     board.print
 
-    if (tick%5 == 0){blocks.foreach(t => t.fall(10))}
+    val yyy = if (tick%5 == 0){blocks.map(t => t.fall(10))} else blocks
 
-    val movedBoard = board.copy(blocks = moveTetromino(userInput, blocks))
+    val movedBoard = board.copy(blocks = moveTetromino(userInput, yyy))
 
-    collision(movedBoard)
+    val xxx = collision(movedBoard)
 
-    board
-      .gameOver
+    xxx
+      .gameOver.map(t => t)
       .fold(_ => board, board =>
-        board.spawn
+        board).spawn
              .fullLineCheck
-             .tickOne)
+             .tickOne
   }
 
   def moveTetromino(userInput: Char, board: List[Tetromino]): List[Tetromino] = {
@@ -43,25 +43,7 @@ object Reader {
     }
   }
 
-  def fullLineCheck(board: Board): Board ={
-    val blocks = board.blocks
-    val nonMovingTets = blocks.filterNot(_.userCanControl)
-    val lines = nonMovingTets.map(_.getIndex).map(i => i/10)
-
-    val mapped = lines.groupBy(i=>i).mapValues(_.length)
-
-    val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
-    val increaseScoreBy = fullLines.length
-    if (fullLines.nonEmpty) {
-      val lowestLine = fullLines.max
-      val aboveLine = blocks.filter(t => t.getIndex < lowestLine * 10)
-      aboveLine.foreach(t => t.restartGravity)
-    }
-    board.copy(blocks = blocks.filterNot(t => fullLines.contains(t.getIndex/10)), score = board.score + increaseScoreBy)
-  }
-
-
-  def collision(board: Board): Unit ={
+  def collision(board: Board): Board ={
     val blocks = board.blocks
 
     val movingTets = blocks.filter(t =>  t.canFall)
@@ -74,21 +56,21 @@ object Reader {
     val a = blocks.map(t => if(t.getIndex+10>149) t.freeze else t)
     //this block has hit the bottom so freezes
 
-    if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){blocks.foreach(_.freeze)}
+    val b = if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){a.map(_.freeze)} else a
     //a moving block has hit a frozen block
 
-    if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){blocks.foreach(_.canMoveRight = false)}
+    val c = if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){b.map(t => t.copy(canMoveRight = false))}else b
     //something has hit the right wall, nothing can move right
 
-    if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0))
-    {blocks.foreach(_.canMoveLeft = false)}
+    val d = if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0))
+    {c.map(_.copy(canMoveLeft = false))} else c
     //something has hit the left wall, nothing can move left
 
-    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){blocks.foreach(_.canMoveLeft = false)}
+    val e = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){d.map(_.copy(canMoveLeft = false))} else d
     //something has hit a block to its left
 
-    if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){blocks.foreach(_.canMoveRight = false)}
+    val f = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){e.map(_.copy(canMoveRight = false))} else e
     //something has hit a block to its right
-
+    board.copy(blocks = f)
   }
 }

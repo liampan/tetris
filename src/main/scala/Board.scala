@@ -1,4 +1,3 @@
-
 case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0) {
 
   def tickOne: Board = {
@@ -33,12 +32,15 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
     val increaseScoreBy = fullLines.length
 
-    if (fullLines.nonEmpty){
+    val restartedBlocks = if (fullLines.nonEmpty){
       val lowestLine = fullLines.max
       val aboveLine = blocks.filter(t => t.getIndex < lowestLine * 10)
-      aboveLine.foreach(t => t.restartGravity)
-    }
-    this.copy(blocks = blocks.filterNot(t => fullLines.contains(t.getIndex/10)), score = this.score + increaseScoreBy)
+      aboveLine.map(t => t.restartGravity)
+    } else Nil
+
+    this.copy(
+      blocks = blocks.filterNot(t => fullLines.contains(t.getIndex/10)).filterNot(t => fullLines.nonEmpty && t.getIndex < fullLines.max * 10) ++ restartedBlocks,
+      score = this.score + increaseScoreBy)
   }
 
   def gameOver: Either[Unit, Board] ={
