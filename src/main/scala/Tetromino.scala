@@ -56,7 +56,8 @@ case class Tetromino(
       case "blue"    => s"${Console.BLUE}"
       case "magenta" => s"${Console.MAGENTA}"
       case "cyan"    => s"${Console.CYAN}"
-      case _         => s"${Console.YELLOW}"
+      case "yellow"  => s"${Console.YELLOW}"
+      case _         => s"${Console.RESET}"
     }
 
     consoleColor+s"■${Console.RESET}"

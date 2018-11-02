@@ -18,6 +18,7 @@ object Rotate {
         case `zShape` => rotateZ(userControlled)
         case `sShape` => rotateS(userControlled)
         case `line`   => rotateLine(userControlled)
+        case `square` => List(0,0,0,0)
       }
 
       val rotatedBlocks = userControlled.zip(moves).map{
