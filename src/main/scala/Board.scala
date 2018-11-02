@@ -26,7 +26,7 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
   def fullLineCheck: Board = {
     val blocks = this.blocks
     val nonMovingTets = blocks.filterNot(_.userCanControl)
-    val lines = nonMovingTets.map(_.getIndex).map(i => i/10)
+    val lines = nonMovingTets.map(_.index).map(i => i/10)
 
     val mapped = lines.groupBy(i=>i).mapValues(_.length)
     val fullLines = mapped.mapValues(_ == 10).filter(i => i._2).keys.toList
@@ -34,17 +34,17 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
 
     val restartedBlocks = if (fullLines.nonEmpty){
       val lowestLine = fullLines.max
-      val aboveLine = blocks.filter(t => t.getIndex < lowestLine * 10)
+      val aboveLine = blocks.filter(t => t.index < lowestLine * 10)
       aboveLine.map(t => t.restartGravity)
     } else Nil
 
     this.copy(
-      blocks = blocks.filterNot(t => fullLines.contains(t.getIndex/10)).filterNot(t => fullLines.nonEmpty && t.getIndex < fullLines.max * 10) ++ restartedBlocks,
+      blocks = blocks.filterNot(t => fullLines.contains(t.index/10)).filterNot(t => fullLines.nonEmpty && t.index < fullLines.max * 10) ++ restartedBlocks,
       score = this.score + increaseScoreBy)
   }
 
   def gameOverCheck: Board ={
-    if (this.blocks.exists(t => t.getIndex/10 == 0 && !t.userCanControl && !t.canFall )){
+    if (this.blocks.exists(t => t.index/10 == 0 && !t.userCanControl && !t.canFall )){
       this.tickFive.print
       println(Console.BLINK+ Console.RED +"       GAME OVER" + Console.RESET)
 
@@ -77,28 +77,28 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
 
     val movingTets = blocks.filter(t =>  t.canFall)
     val playerTets = blocks.filter(t =>  t.userCanControl)
-    val uncontrolledTetsIndexes = blocks.filterNot(_.userCanControl).map(_.getIndex)
-    val nonMovingTetsIndexes = blocks.filterNot(t =>  t.canFall).map(_.getIndex).toSet
-    val movingTetsFutureIndexes = blocks.filter(t =>  t.canFall).map(_.getIndex+10).toSet
+    val uncontrolledTetsIndexes = blocks.filterNot(_.userCanControl).map(_.index)
+    val nonMovingTetsIndexes = blocks.filterNot(t =>  t.canFall).map(_.index).toSet
+    val movingTetsFutureIndexes = movingTets.map(_.index+10).toSet
 
 
-    val a = blocks.map(t => if(t.getIndex+10>149) t.freeze else t)
+    val a = blocks.map(t => if(t.index+10>149) t.freeze else t)
     //this block has hit the bottom so freezes
 
     val b = if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){a.map(_.freeze)} else a
     //a moving block has hit a frozen block
 
-    val c = if (playerTets.exists(t => (t.getIndex+1)%10 == 0)){b.map(t => t.copy(canMoveRight = false))}else b
+    val c = if (playerTets.exists(t => (t.index+1)%10 == 0)){b.map(t => t.copy(canMoveRight = false))}else b
     //something has hit the right wall, nothing can move right
 
-    val d = if (playerTets.exists(t => (t.getIndex-1)%10 == 9 || (t.getIndex<0) && (t.getIndex-1)%10 == -1 || t.getIndex == 0))
+    val d = if (playerTets.exists(t => (t.index-1)%10 == 9 || (t.index<0) && (t.index-1)%10 == -1 || t.index == 0))
     {c.map(_.copy(canMoveLeft = false))} else c
     //something has hit the left wall, nothing can move left
 
-    val e = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex-1))){d.map(_.copy(canMoveLeft = false))} else d
+    val e = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index-1))){d.map(_.copy(canMoveLeft = false))} else d
     //something has hit a block to its left
 
-    val f = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.getIndex+1))){e.map(_.copy(canMoveRight = false))} else e
+    val f = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index+1))){e.map(_.copy(canMoveRight = false))} else e
     //something has hit a block to its right
     this.copy(blocks = f)
   }

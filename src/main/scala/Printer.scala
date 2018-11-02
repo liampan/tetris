@@ -32,8 +32,8 @@ object Printer {
 
     val filled: List[String] =
       blank.map{case (index:Int, blankLook:String) =>
-        if(board.map(_.getIndex).contains(index)) {
-          val tetromino = board(board.indexWhere(p => p.getIndex == index))
+        if(board.map(_.index).contains(index)) {
+          val tetromino = board(board.indexWhere(p => p.index == index))
 
           tetromino.getLook} else blankLook}
 
@@ -43,7 +43,7 @@ object Printer {
   def aboveBoardContent(preview: List[Tetromino], score: Int) ={
     println(" Up next:")
     val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
-    val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.getIndex).contains(i)) "■" else " ").grouped(4).toList
+    val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.index).contains(i)) "■" else " ").grouped(4).toList
 
     println("┏━" + "━"*8 + "━┓" + s" score: ${Console.BOLD}$score${Console.RESET}")
     ind.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}

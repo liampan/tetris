@@ -11,7 +11,7 @@ object Rotate {
 
     if (userControlled.nonEmpty && oneShape && canRotate) {
 
-      val moves : List[Int] = userControlled.head.getShape match {
+      val moves : List[Int] = userControlled.head.shape match {
         case `lShape` => rotateL(userControlled)
         case `tee`    => rotateT(userControlled)
         case `jShape` => rotateJ(userControlled)
