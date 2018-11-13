@@ -13,20 +13,8 @@ case class Tetromino(
     this.copy(rotateState = if(this.rotateState == 3) 0 else this.rotateState+1)
   }
 
-  def getIndex:Int = {
-    this.index
-  }
-
-  def setIndex(newIndex: Int):Tetromino = {
-    this.copy(index = newIndex)
-  }
-
-  def getShape:String = {
-    this.shape
-  }
-
   def moveLeft(board: List[Tetromino]): Tetromino ={
-    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
+    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.index)
 
     if (this.canMoveLeft && this.userCanControl && !uncontrolledTetsIndexes.contains(index-1)) {
       this.copy(canMoveRight = true, index = this.index -1)
@@ -34,7 +22,7 @@ case class Tetromino(
   }
 
   def moveRight(board: List[Tetromino]): Tetromino ={
-    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.getIndex)
+    val uncontrolledTetsIndexes = board.filterNot(_.userCanControl).map(_.index)
 
     if (canMoveRight && userCanControl && !uncontrolledTetsIndexes.contains(this.index+1)) {
       this.copy(canMoveLeft = true, index = this.index +1)
@@ -68,7 +56,8 @@ case class Tetromino(
       case "blue"    => s"${Console.BLUE}"
       case "magenta" => s"${Console.MAGENTA}"
       case "cyan"    => s"${Console.CYAN}"
-      case _         => s"${Console.YELLOW}"
+      case "yellow"  => s"${Console.YELLOW}"
+      case _         => s"${Console.RESET}"
     }
 
     consoleColor+s"■${Console.RESET}"

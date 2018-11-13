@@ -5,7 +5,7 @@ object Program {
     val con = new jline.console.ConsoleReader
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
-    val charStream = Stream.iterate(0)(_ => nbis.read(1000))
+    val charStream = Stream.iterate(0)(_ => nbis.read(100))
 
     charStream.foldLeft(Board(Nil))((currentBoard, key) => {
       val userInput: Char = key.toChar

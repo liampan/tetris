@@ -11,13 +11,14 @@ object Rotate {
 
     if (userControlled.nonEmpty && oneShape && canRotate) {
 
-      val moves : List[Int] = userControlled.head.getShape match {
+      val moves : List[Int] = userControlled.head.shape match {
         case `lShape` => rotateL(userControlled)
         case `tee`    => rotateT(userControlled)
         case `jShape` => rotateJ(userControlled)
         case `zShape` => rotateZ(userControlled)
         case `sShape` => rotateS(userControlled)
         case `line`   => rotateLine(userControlled)
+        case `square` => List(0,0,0,0)
       }
 
       val rotatedBlocks = userControlled.zip(moves).map{
