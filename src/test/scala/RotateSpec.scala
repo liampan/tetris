@@ -20,8 +20,6 @@ class RotateSpec extends WordSpec with MustMatchers {
        val board = startIndexes.map(Tetromino(shapeName, "noColour", _))
         board.map(_.rotateState) mustEqual List(0, 0, 0, 0)
 
-        println(shapeName + "  " + startIndexes)
-
         rotate(board).map(_.rotateState) mustEqual List(1, 1, 1, 1)
         rotate(board).map(_.index) mustEqual endIndexes
       }
