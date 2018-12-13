@@ -1,186 +1,28 @@
 
-val seed = 1111111111
+def divisor(int: Int) = {
+  val start = 4117
+  var holding = start
 
-val bin = "1111111111" // seed.toBinaryString
-
-val gen = bin.takeRight(5)+bin.take(5)
-
-Integer.parseInt(bin, 2)
-
-
-case class Random() {
-
-  private var current = 0
 
   def nextInt() = {
-      var str = binPrep(current)
-    val l: List[Int] = current.toString.toList.map(_.asDigit)
-    l.foreach{i =>
-      str = (str.substring(0, i) + binSwap(str(i)) + str.substring(i+1, 10)).reverse
-      str = str.map(c => binSwap(c)).mkString
-    }
-      current = Integer.parseInt(str, 2)
-    // l.sum%6
-    current
+    val working = holding
+    holding = (working % 593) * 10
+    working / 7
   }
 
-  def binSwap(str : Char): String ={
-    str match {
-      case '0' => "1"
-      case '1' => "0"
-    }
+  val runner = List.range(1, 10000)
+  var fullList = List.range(1, start)
+
+  runner.foreach(i => fullList = fullList.filterNot(_ == nextInt()))
+
+  val removed = start - fullList.length
+
+  def percentage = {
+    val percentageRaw = (removed.toDouble / start) * 100
+    percentageRaw - (percentageRaw % 0.01)
   }
 
-
-  def binPrep(num: Int) = {
-    var str = num.toBinaryString
-    while(str.length < 10 ){
-      str = "0"+  str
-    }
-    str
-  }
+ s"${nextInt().toBinaryString.map(_.asDigit).sum} -> $percentage% \n"
 }
 
-val random = Random()
-
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
-random.nextInt()
+divisor(1)

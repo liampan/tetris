@@ -1,4 +1,6 @@
-case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0) {
+import scala.util.matching.Regex
+
+case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0, name: String) {
 
   def tickOne: Board = {
     this.copy(tick = this.tick+1)
@@ -9,7 +11,7 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
   }
 
   def print = {
-    Printer(this.blocks, 10, this.nextTet, this.score)
+    Printer(this.blocks, 10, this.nextTet, this.score, this.name)
   }
 
   def spawn: Board = {
@@ -43,11 +45,15 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
       score = this.score + increaseScoreBy)
   }
 
-  //TODO this does more than just check...
-  def gameOverCheck: Board ={
+
+  def gameOverAction: Board ={
     if (this.blocks.exists(t => t.index/10 == 0 && !t.userCanControl && !t.canFall )){
       this.tickFive.print
-      println(Console.BLINK+ Console.RED +"       GAME OVER" + Console.RESET)
+      println(Console.BLINK + Console.RED +"       GAME OVER" + Console.RESET)
+
+      val savedScore: String = endGame
+
+      println(s"score saved -- $savedScore")
 
       System.exit(0)
       this
@@ -94,6 +100,16 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     def allCC = hitTheBottomCC _ andThen blockBelowCC  andThen rightWallCC andThen leftWallCC andThen blockToLeftCC andThen blockToRightCC
 
     this.copy(blocks = allCC(blocks))
+  }
+
+  private def endGame: String ={
+    def get(url: String) = {scala.io.Source.fromURL(url).mkString}
+    val clean: Regex = """\w""".r
+    val sendName = clean.findAllIn(name).mkString
+
+    val url = s"http://localhost:5000/db/$sendName/$score"
+
+    get(url)
   }
 
 }

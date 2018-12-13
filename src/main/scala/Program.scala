@@ -2,28 +2,34 @@ object Program {
 
   // Very JAVA-ry here...
   def main(args: Array[String]): Unit = {
+    Printer.clear()
+    Printer.printTitle
+    val name = scala.io.StdIn.readLine("Enter name: ")
+
     val con = new jline.console.ConsoleReader
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
     val charStream = Stream.iterate(0)(_ => nbis.read(100))
 
-    charStream.foldLeft(Board(Nil))((currentBoard, key) => {
+
+    charStream.foldLeft(Board(Nil, name = name))((currentBoard, key) => {
       val userInput: Char = key.toChar
       parse(currentBoard, userInput)
     })
   }
 
   def parse(board: Board, userInput: Char): Board ={
-
     board.print
 
     board
       .gravity
       .moveBlocks(userInput)
       .collisionCheck
-      .gameOverCheck
+      .gameOverAction
       .fullLineCheck
       .spawn
       .tickOne
   }
+
+
 }

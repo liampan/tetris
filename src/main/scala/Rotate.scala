@@ -14,11 +14,11 @@ object Rotate {
 
         val moves: List[Int] = userControlled.head.shape match {
           case `lShape` => rotateL(userControlled)
-          case `tee` => rotateT(userControlled)
+          case `tee`    => rotateT(userControlled)
           case `jShape` => rotateJ(userControlled)
           case `zShape` => rotateZ(userControlled)
           case `sShape` => rotateS(userControlled)
-          case `line` => rotateLine(userControlled)
+          case `line`   => rotateLine(userControlled)
           case `square` => List(0, 0, 0, 0)
         }
 
@@ -39,36 +39,19 @@ object Rotate {
     movingTets.head.shape match {
       case `line` =>{
         movingTets.head.rotateState match {
-          case 0 =>{
+          case 0 =>
             val onEdge = tetsIndexed.map(_%10).exists(i => i == 8 | i ==  9 | i == 0)
             !onEdge
-          }
-          case 2 =>{
-            val onEdge = tetsIndexed.map(_%10).exists(i => i == 8 | i ==  9 | i == 0 | i == 2)
+          case 2 =>
+            val onEdge = tetsIndexed.map(_%10).exists(i => i == 8 | i ==  9 | i == 0 | i == 1)
             !onEdge
-          }
-          case _ =>{
-            true
-          }
+          case _ => true
         }
       }
-      case _ =>{
+      case _ =>
         val onEdge = tetsIndexed.map(_%10).contains(0 | 9)
         !onEdge
-      }
-
     }
-
-      // shape match {
-    // case line => {
-    //  rotate state match {
-    //  case 1 => within 2 of right(ends in 9 | 8 ) wall return false ET
-    //  case 3 => with in 2 of left(ends in 0 | 1) wall return false ET
-    //  case _ => with in 1 of either wall return false ET
-    // }
-
-    // case _ => with in either wall of 1 index return false else true
-
   }
 
   private def doesNotPhase(implicit blocks: List[Tetromino]): Boolean = {
