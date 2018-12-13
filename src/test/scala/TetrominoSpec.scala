@@ -31,19 +31,19 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
   "move left with input 'a' " must {
     "change an index by -1" in {
-      val board = Board(List(Tetromino("dot", "red", 5)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 5)), Nil).collisionCheck
 
       board.moveBlocks('a').blocks.head.index mustEqual 4
     }
 
     "not change the index off of the board" in {
-      val board = Board(List(Tetromino("dot", "red", 0)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 0)), Nil).collisionCheck
 
       board.moveBlocks('a').blocks.head.index mustEqual 0
     }
 
     "not change the index off of the board on a different line" in {
-      val board = Board(List(Tetromino("dot", "red", 10)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 10)), Nil).collisionCheck
 
       board.moveBlocks('a').blocks.head.index mustEqual 10
     }
@@ -51,19 +51,19 @@ class TetrominoSpec extends WordSpec with MustMatchers {
 
   "move right with input 'd'  " must {
     "change an index by +1" in {
-      val board = Board(List(Tetromino("dot", "red", 5)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 5)), Nil).collisionCheck
 
       board.moveBlocks('d').blocks.head.index mustEqual 6
     }
 
     "not change the index off of the board" in {
-      val board = Board(List(Tetromino("dot", "red", 9)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 9)), Nil).collisionCheck
 
       board.moveBlocks('d').blocks.head.index mustEqual 9
     }
 
     "not change the index off of the board on a different line" in {
-      val board = Board(List(Tetromino("dot", "red", 19)), Nil).collision
+      val board = Board(List(Tetromino("dot", "red", 19)), Nil).collisionCheck
 
       board.moveBlocks('d').blocks.head.index mustEqual 19
     }

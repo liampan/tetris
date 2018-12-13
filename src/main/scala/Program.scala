@@ -20,7 +20,7 @@ object Program {
     board
       .gravity
       .moveBlocks(userInput)
-      .collision
+      .collisionCheck
       .gameOverCheck
       .fullLineCheck
       .spawn

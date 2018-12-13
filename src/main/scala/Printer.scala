@@ -28,7 +28,7 @@ object Printer {
   }
 
   private def boardConverter(board: List[Tetromino], bW: Int): List[List[(String)]] = {
-    val blank = List.range(0, 150).map(i => (i, s"${Console.BLACK}.${Console.RESET}"))
+    val blank = List.range(0, 150).map(i => (i, s"${Console.BLACK}${i%10}${Console.RESET}"))
 
     val filled: List[String] =
       blank.map{case (index:Int, blankLook:String) =>
