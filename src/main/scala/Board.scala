@@ -1,4 +1,6 @@
-case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0) {
+import scala.util.matching.Regex
+
+case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0, name: String) {
 
   def tickOne: Board = {
     this.copy(tick = this.tick+1)
@@ -9,7 +11,7 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
   }
 
   def print = {
-    Printer(this.blocks, 10, this.nextTet, this.score)
+    Printer(this.blocks, 10, this.nextTet, this.score, this.name)
   }
 
   def spawn: Board = {
@@ -43,10 +45,15 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
       score = this.score + increaseScoreBy)
   }
 
-  def gameOverCheck: Board ={
+
+  def gameOverAction: Board ={
     if (this.blocks.exists(t => t.index/10 == 0 && !t.userCanControl && !t.canFall )){
       this.tickFive.print
-      println(Console.BLINK+ Console.RED +"       GAME OVER" + Console.RESET)
+      println(Console.BLINK + Console.RED +"       GAME OVER" + Console.RESET)
+
+      val savedScore: String = endGame
+
+      println(s"score saved -- $savedScore")
 
       System.exit(0)
       this
@@ -72,7 +79,7 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     this.copy(blocks = newBlocks)
   }
 
-  def collision: Board ={
+  def collisionCheck: Board = {
     val blocks = this.blocks
 
     val movingTets = blocks.filter(t =>  t.canFall)
@@ -81,26 +88,28 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     val nonMovingTetsIndexes = blocks.filterNot(t =>  t.canFall).map(_.index).toSet
     val movingTetsFutureIndexes = movingTets.map(_.index+10).toSet
 
+    def hitTheBottomCC(T: List[Tetromino])= {T.map(t => if(t.index+10>149) t.freeze else t)}
+    def blockBelowCC(T: List[Tetromino])= {if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){T.map(_.freeze)} else T}
+    def rightWallCC(T: List[Tetromino])= {if (playerTets.exists(t => (t.index+1)%10 == 0)){T.map(t => t.copy(canMoveRight = false))}else T}
+    def leftWallCC(T: List[Tetromino])= {if (playerTets.exists(t => (t.index-1)%10 == 9 || (t.index<0) && (t.index-1)%10 == -1 || t.index == 0))
+    {T.map(_.copy(canMoveLeft = false))} else T}
+    def blockToLeftCC(T: List[Tetromino])= {if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index-1))){T.map(_.copy(canMoveLeft = false))} else T}
 
-    val a = blocks.map(t => if(t.index+10>149) t.freeze else t)
-    //this block has hit the bottom so freezes
+    def blockToRightCC(T: List[Tetromino])= {if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index+1))){T.map(_.copy(canMoveRight = false))} else T}
 
-    val b = if (nonMovingTetsIndexes.intersect(movingTetsFutureIndexes).nonEmpty){a.map(_.freeze)} else a
-    //a moving block has hit a frozen block
+    def allCC = hitTheBottomCC _ andThen blockBelowCC  andThen rightWallCC andThen leftWallCC andThen blockToLeftCC andThen blockToRightCC
 
-    val c = if (playerTets.exists(t => (t.index+1)%10 == 0)){b.map(t => t.copy(canMoveRight = false))}else b
-    //something has hit the right wall, nothing can move right
+    this.copy(blocks = allCC(blocks))
+  }
 
-    val d = if (playerTets.exists(t => (t.index-1)%10 == 9 || (t.index<0) && (t.index-1)%10 == -1 || t.index == 0))
-    {c.map(_.copy(canMoveLeft = false))} else c
-    //something has hit the left wall, nothing can move left
+  private def endGame: String ={
+    def get(url: String) = {scala.io.Source.fromURL(url).mkString}
+    val clean: Regex = """\w""".r
+    val sendName = clean.findAllIn(name).mkString
 
-    val e = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index-1))){d.map(_.copy(canMoveLeft = false))} else d
-    //something has hit a block to its left
+    val url = s"http://localhost:5000/db/$sendName/$score"
 
-    val f = if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index+1))){e.map(_.copy(canMoveRight = false))} else e
-    //something has hit a block to its right
-    this.copy(blocks = f)
+    get(url)
   }
 
 }

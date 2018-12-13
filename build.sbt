@@ -8,3 +8,5 @@ libraryDependencies  ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "jline" % "jline" % "2.14.6"
 )
+
+libraryDependencies += "org.apache.derby" % "derby" % "10.13.1.1"
