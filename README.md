@@ -8,10 +8,10 @@ in a full screen terminal
 
 Run : `sbt run`
 
-controls are AWSD or arrow keys.
- A , <-   move left 
- D , ->   move Right
- W ,  ^   roate
+controls are AWSD or arrow keys.  
+  A  < move left  
+  D  > move Right  
+  W  ^ Roate  
 
 ### leader board
 
