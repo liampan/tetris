@@ -1,6 +1,13 @@
-import scala.util.matching.Regex
 
-case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spawn, tick: Int = 0, score: Int = 0, name: String) {
+
+case class Board(
+                  blocks :List[Tetromino],
+                  nextTet : List[Tetromino]= Spawner.spawn,
+                  tick: Int = 0,
+                  score: Int = 0,
+                  name: String,
+                  speed: Int = 100
+                ) {
 
   def tickOne: Board = {
     this.copy(tick = this.tick+1)
@@ -10,8 +17,14 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     this.copy(tick = this.tick+5)
   }
 
+  def evaluateSpeed: Board = {
+    if (this.speed != 10 & tick%1000 == 0) {
+      this.copy(speed = speed - 10)
+    } else this
+  }
+
   def print = {
-    Printer(this.blocks, 10, this.nextTet, this.score, this.name)
+    Printer(this.blocks, 10, this.nextTet, this.score, this.name, 10-speed/10)
   }
 
   def spawn: Board = {
@@ -51,9 +64,7 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
       this.tickFive.print
       println(Console.BLINK + Console.RED +"       GAME OVER" + Console.RESET)
 
-      val savedScore: String = endGame
-
-      println(s"score saved -- $savedScore")
+      Submit.toLeaderBoard(name, score)
 
       System.exit(0)
       this
@@ -71,9 +82,9 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     val userControlledTets = blocks.filter(_.userCanControl)
     val staticTets = blocks.filterNot(_.userCanControl)
     val newBlocks = userInput match {
-      case 'a' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveLeft(blocks))
-      case 'd' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveRight(blocks))
-      case 'w' => Rotate.rotate(blocks)
+      case 'a' | 'D' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveLeft(blocks))
+      case 'd' | 'C' => staticTets ++ userControlledTets.map(tetromino => tetromino.moveRight(blocks))
+      case 'w' | 'A' => Rotate.rotate(blocks)
       case _   => blocks
     }
     this.copy(blocks = newBlocks)
@@ -94,7 +105,6 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     def leftWallCC(T: List[Tetromino])= {if (playerTets.exists(t => (t.index-1)%10 == 9 || (t.index<0) && (t.index-1)%10 == -1 || t.index == 0))
     {T.map(_.copy(canMoveLeft = false))} else T}
     def blockToLeftCC(T: List[Tetromino])= {if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index-1))){T.map(_.copy(canMoveLeft = false))} else T}
-
     def blockToRightCC(T: List[Tetromino])= {if (playerTets.exists(t => uncontrolledTetsIndexes.contains(t.index+1))){T.map(_.copy(canMoveRight = false))} else T}
 
     def allCC = hitTheBottomCC _ andThen blockBelowCC  andThen rightWallCC andThen leftWallCC andThen blockToLeftCC andThen blockToRightCC
@@ -102,14 +112,6 @@ case class Board(blocks :List[Tetromino], nextTet : List[Tetromino]= Spawner.spa
     this.copy(blocks = allCC(blocks))
   }
 
-  private def endGame: String ={
-    def get(url: String) = {scala.io.Source.fromURL(url).mkString}
-    val clean: Regex = """\w""".r
-    val sendName = clean.findAllIn(name).mkString
 
-    val url = s"http://localhost:5000/db/$sendName/$score"
-
-    get(url)
-  }
 
 }

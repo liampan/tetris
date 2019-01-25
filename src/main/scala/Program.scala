@@ -1,4 +1,5 @@
 object Program {
+  var speed = 100
 
   // Very JAVA-ry here...
   def main(args: Array[String]): Unit = {
@@ -6,14 +7,15 @@ object Program {
     Printer.printTitle
     val name = scala.io.StdIn.readLine("Enter name: ")
 
+
     val con = new jline.console.ConsoleReader
     val is = con.getInput
     val nbis = new jline.internal.NonBlockingInputStream(is, true)
-    val charStream = Stream.iterate(0)(_ => nbis.read(100))
+    val charStream = Stream.iterate(0)(_ => nbis.read(speed))
 
 
     charStream.foldLeft(Board(Nil, name = name))((currentBoard, key) => {
-      val userInput: Char = key.toChar
+      val userInput = key.toChar
       parse(currentBoard, userInput)
     })
   }
@@ -21,7 +23,10 @@ object Program {
   def parse(board: Board, userInput: Char): Board ={
     board.print
 
+    speed = board.speed
+
     board
+      .evaluateSpeed
       .gravity
       .moveBlocks(userInput)
       .collisionCheck
@@ -30,6 +35,5 @@ object Program {
       .spawn
       .tickOne
   }
-
 
 }

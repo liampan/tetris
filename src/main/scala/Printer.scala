@@ -2,10 +2,10 @@ object Printer {
 
   val tetrisSmall = s"${Console.BOLD}  ___ _____ _ ___ __\n   | |_  | |_) | (_ \n   | |__ | | \\_|___)${Console.RESET}"
 
-  def apply(board: List[Tetromino], bW: Int, nextTet: List[Tetromino], score: Int, name: String)={
+  def apply(board: List[Tetromino], bW: Int, nextTet: List[Tetromino], score: Int, name: String, level: Int)={
     clear()
     printTitle
-    aboveBoardContent(nextTet, score, name)
+    aboveBoardContent(nextTet, score, name, level)
     printBoard(board, bW)
   }
 
@@ -28,7 +28,7 @@ object Printer {
   }
 
   private def boardConverter(board: List[Tetromino], bW: Int): List[List[(String)]] = {
-    val blank = List.range(0, 150).map(i => (i, s"${Console.BLACK}${i%10}${Console.RESET}"))
+    val blank = List.range(0, 150).map(i => (i, s"${Console.BLACK}.${Console.RESET}"))
 
     val filled: List[String] =
       blank.map{case (index:Int, blankLook:String) =>
@@ -40,13 +40,14 @@ object Printer {
     filled.grouped(bW).toList
   }
 
-  def aboveBoardContent(preview: List[Tetromino], score: Int, name: String) ={
+  def aboveBoardContent(preview: List[Tetromino], score: Int, name: String, level: Int) ={
     println(" Up next:")
     val spawnPos = List(-4,-5,-6,-7,-14,-15,-16,-17,-24,-25,-26,-27,-34,-35,-36,-37).reverse
     val ind: List[List[String]] = spawnPos.map(i => if(preview.map(_.index).contains(i)) "■" else " ").grouped(4).toList
 
     println("┏━" + "━"*8 + "━┓" + s" score: ${Console.BOLD}$score${Console.RESET}")
-    ind.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}
+    println(s"┃ ${ind.head.mkString("", " ", " ")} ┃" + s" level: $level")
+    ind.tail.foreach { row => println(s"┃ ${row.mkString("", " ", " ")} ┃")}
     println("┗━" + "━"*8 + "━┛" + s"   [ ${name.take(3)} ]")
   }
 

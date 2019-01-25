@@ -9,4 +9,6 @@ libraryDependencies  ++= Seq(
   "jline" % "jline" % "2.14.6"
 )
 
-libraryDependencies += "org.apache.derby" % "derby" % "10.13.1.1"
+libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.6"
+libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.4.1"
+libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
