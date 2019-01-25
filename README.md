@@ -8,7 +8,7 @@ in a full screen terminal
 
 Run : `sbt run`
 
-contoles are AWSD or arrow keys.
+controls are AWSD or arrow keys.
 
 ### leader board
 
