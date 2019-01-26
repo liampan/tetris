@@ -64,7 +64,7 @@ case class Board(
       this.tickFive.print
       println(Console.BLINK + Console.RED +"       GAME OVER" + Console.RESET)
 
-      Submit.toLeaderBoard(name, score)
+      SecretHamletService.submitToLeaderBoard(name, score)
 
       System.exit(0)
       this

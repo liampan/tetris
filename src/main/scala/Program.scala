@@ -4,9 +4,9 @@ object Program {
   // Very JAVA-ry here...
   def main(args: Array[String]): Unit = {
     Printer.clear()
+    SecretHamletService.pingWakeUp
     Printer.printTitle
     val name = scala.io.StdIn.readLine("Enter name: ")
-
 
     val con = new jline.console.ConsoleReader
     val is = con.getInput

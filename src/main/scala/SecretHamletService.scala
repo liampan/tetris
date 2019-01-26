@@ -5,15 +5,16 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.DefaultHttpClient
 
-object Submit {
+object SecretHamletService {
 
   case class Player(name : String, score : Int){
     override def toString = s"$name ~ $score"
   }
 
-  val leaderBoardUrl = "https://secret-hamlet-25480.herokuapp.com/db"
+  private val dataBaseUrl = "https://secret-hamlet-25480.herokuapp.com/db"
+  private val pingUrl = "https://secret-hamlet-25480.herokuapp.com/ping-ping"
 
-  def toLeaderBoard(name : String, score : Int) ={
+  def submitToLeaderBoard(name : String, score : Int) ={
     val clean: Regex = """\w""".r
     val sendName = clean.findAllIn(name).mkString
 
@@ -23,7 +24,7 @@ object Submit {
 
     val data = new Gson().toJson(player)
 
-    postJson(leaderBoardUrl, data)
+    postJson(dataBaseUrl, data)
   }
 
   private def postJson(url: String, jsonData: String) = {
@@ -34,6 +35,11 @@ object Submit {
     (new DefaultHttpClient).execute(post)
   }
 
+  def pingWakeUp = {
+    try {
+      get(pingUrl)
+    } catch {case _ : Exception => println("cannot submit to leader board")}
+  }
 
   private def get(url: String) = {
     scala.io.Source.fromURL(url).mkString
