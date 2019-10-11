@@ -15,4 +15,6 @@ controls are AWSD or arrow keys.
 
 ### leader board
 
+#currently shuttered
+
  `https://secret-hamlet-25480.herokuapp.com/tetris-leader-board `
